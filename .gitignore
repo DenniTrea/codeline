@@ -1,0 +1,34 @@
+# Dependencies and generated output
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+*.tsbuildinfo
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+credentials.json
+
+# Database exports and local database files
+*.dump
+*.backup
+*.sql.gz
+*.sqlite
+*.sqlite3
+
+# Logs and editor state
+*.log
+.idea/
+.vscode/
+.obsidian/
+.DS_Store
+Thumbs.db
