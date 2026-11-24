@@ -32,3 +32,6 @@ credentials.json
 .obsidian/
 .DS_Store
 Thumbs.db
+
+# Local session files
+.local/

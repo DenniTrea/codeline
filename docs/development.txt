@@ -1,0 +1,202 @@
+CodeLine development — 24 November 2026
+
+LOCAL RUN
+Node 22.12+ (Node 24 LTS recommended), npm.
+From /home/deni/Projects/codeline:
+  npm ci
+  npm run dev
+Open http://localhost:5173 (use localhost consistently for the sign-in cookie).
+Express listens on 127.0.0.1:3001. Port 3000 is reserved for private PostgREST.
+The Vite proxy forwards /api, /auth, /health and /socket.io to Express.
+
+DATABASE
+The existing PostgreSQL 16 schema in denidb was inspected through SSH and direct
+TLS on 24 November. No migrations were created or rerun. The ten business tables
+are unchanged. Read the current schema with:
+  npm run db:inspect -w backend
+This reads system catalogs only, not student rows.
+backend/.env holds local credentials copied from the authorized VM credential
+file. It has mode 600 and is ignored. Never paste it, commit it or place any
+credentials into VITE_ variables.
+DATABASE_SSL_MODE=require explicitly supports the existing self-signed setup:
+it encrypts the connection but does not verify the server. verify-full plus a
+trusted DATABASE_CA_FILE is the preferred future configuration. No database or
+Azure firewall exposure was changed by this implementation.
+
+MICROSOFT REGISTRATION — REQUIRED BEFORE LIVE SIGN-IN
+1. In the university Microsoft Entra directory, open App registrations and choose
+   New registration. Name: CodeLine. Supported accounts: this directory only.
+2. Add Web redirect URI: http://localhost:5173/auth/callback (not SPA).
+3. Copy directory/tenant ID and application/client ID into backend/.env.
+4. Create a client secret if university policy permits it, and put its VALUE
+   directly into backend/.env as MICROSOFT_CLIENT_SECRET. Never send it in chat.
+5. Leave implicit access/ID token grants off. The app uses MSAL Node, code flow,
+   PKCE, state and nonce, with minimal openid/profile/email scopes. No Graph
+   directory/mail permissions are needed. Tenant consent policy may require IT.
+6. Restart npm run dev, then sign in using the real university account.
+The backend registers new validated identities as students only, using oid for
+users.id. It never generates an identity or allows a role picker. Student profile
+names come from the verified identity. Existing users retain their database role.
+Single-tenant login can include tenant guests: a stricter members-only policy
+needs university-approved membership information before implementing exclusions.
+
+ROLE PROVISIONING
+An authorized database administrator must approve staff access separately. After
+real sign-in, inspect the exact user and set only the approved user's role to
+lecturer/admin via DataGrip or a reviewed parameterized admin command. The app
+never promotes the first user automatically. No role was changed during setup.
+Students see enrolled courses only; TA/lecturer/admin see the course catalog.
+Only lecturer/admin can create courses. The current schema has no staff-course
+ownership relation, so staff access is global; per-course staff authorization
+needs a product/schema decision rather than an invented owner column.
+
+SESSIONS AND DEPLOYMENT
+Sessions live in an encrypted local file store under backend/.local/sessions,
+with an eight-hour lifetime and a stable SESSION_SECRET. That folder is private
+and ignored; it contains identity/flow state, never database credentials or the
+MSAL token result. Keep it on persistent VM storage if deploying.
+For production set NODE_ENV=production, a strong stable SESSION_SECRET,
+FRONTEND_ORIGIN=https://your-host, MICROSOFT_REDIRECT_URI=https://your-host/auth/callback,
+and DATABASE_URL pointing to the local VM PostgreSQL server. Register that exact
+HTTPS Web callback in Entra. Nginx must proxy the same paths and set trusted
+X-Forwarded-Proto; Express trusts one local proxy and uses Secure cookies in
+production. Only the local Nginx proxy should reach Express. No production Nginx,
+TLS or application service deployment was performed in this work.
+Socket.IO is installed and rejects gameplay connections until full room/enrollment
+permission checks exist. Exercise editor and game logic are not implemented yet.
+Course roster management is available in the admin panel described below.
+
+VALIDATION
+  npm run typecheck -w backend
+  npm run typecheck -w frontend
+  npm test
+  TEST_DATABASE=1 npm test
+  npm run build
+  npm audit --omit=dev
+The optional database test creates/reads a temporary course in a transaction and
+rolls it back. PostgreSQL identity sequences can advance even after rollback.
+Never add a test login endpoint, fake Microsoft account or production role bypass.
+Real Microsoft university sign-in was verified on 24 November 2026. The app
+registration is cs213-PJ2-G06 and the signed-in account has the default student
+role. Full browser course creation still needs explicit approval of lecturer or
+admin access. The callback forwards the stored nonce to MSAL token exchange.
+A client secret was supplied through chat; replace it before public deployment.
+
+SOURCE HISTORY
+This computer had no Git checkout or command-line GitHub authentication. The
+signed-in browser downloaded the original main snapshot at commit
+5b17f1c6c9c23ee9c1a608c4841fe86901e1b8cf. The initial folder was a source snapshot rather than a Git clone. A copy of the original snapshot
+is /home/deni/Downloads/codeline-main.zip. Authenticate command-line Git, clone
+into a separate path, then copy the reviewed source changes excluding .env,
+.local, node_modules and dist. Do not overwrite this work with a fresh clone.
+
+ADMIN PANEL — 24 November 2026
+The signed-in project owner's existing Microsoft identity was explicitly granted
+CodeLine admin access for this feature. No first-user promotion or public admin
+bootstrap endpoint exists. Reload http://localhost:5173 to open the panel.
+
+Overview: totals for accounts, student-role users, courses, enrollments and open
+rooms; database readiness. Accounts: search/pagination, role changes and student
+profile updates. Courses & enrollment: create/edit course, manually planned count,
+actual enrolled count, student search/pagination, bulk add (up to 50) and remove.
+Users must sign in with university Microsoft once before an admin can enroll them;
+the panel cannot manufacture Microsoft IDs or local-password accounts.
+
+All /api/admin routes require a current database admin role. Mutations require the
+expected Origin. Role changes are serialized and recheck the acting admin inside
+the transaction; own-admin demotion is rejected. New student roles get a profile,
+and existing profiles and game history are retained when roles change. Enrollment
+inserts are idempotent, require registered student-role accounts, and never alter
+courses.studentCount. Removing enrollment or changing an active participant away
+from student is rejected until their open sessions end. Existing session rosters
+are not rewritten. Hard deletion of accounts and account suspension are not
+included; the current schema has no suspended flag. No migrations were added.
+Admins can delete a course from Courses & enrollment after typing its exact code.
+Deletion removes its enrollments and retains student accounts. Courses with any
+exercise (including a soft-deleted exercise) are protected, preserving game history.
+The backend rechecks admin access, code and enrollment count inside a transaction,
+locks the course, and rejects stale confirmation details before deleting anything.
+Successful admin mutations emit actor/action/target IDs to server logs, excluding
+passwords, tokens and student profile content. This is an operational log, not a
+durable database audit trail.
+
+Validation: 12 tests passed with TEST_DATABASE=1, both type checks and full build.
+Real database fixtures are isolated inside a transaction and rolled back. Browser
+verification covered admin overview, account listing, disabled own-role changes,
+course creation/edit/refresh and normal course list. The temporary browser course
+was removed. No other student accounts exist yet, so browser enrollment awaits a
+second real student's login; API/database enrollment tests passed.
+Course deletion validation: all 12 tests still pass, including actual deletion of
+rolled-back fixtures, account retention, wrong/stale confirmation, history guards,
+and unauthorized requests. Both type checks and the full build pass. Browser
+checks verified the confirmation button stays disabled for a wrong code, enables
+for the matching code, and Cancel preserves the existing csc213 course. No actual
+user course was deleted.
+
+LOCAL ROLE TESTING — 24 November 2026
+The development-only banner lets the signed-in admin test student or lecturer
+permissions, then Return to admin. The saved users.role and validated Microsoft
+identity never change. The override lives in that browser session; normal tabs
+share a session, so use separate browser profiles for simultaneous roles.
+The backend applies the effective role to course and admin authorization, not just
+the UI. It rechecks the saved admin role on every request; a demoted account cannot
+keep using the testing controls. No anonymous login or invented identity exists.
+
+Opt in locally with DEV_ROLE_TESTING=true in backend/.env and npm run dev.
+The dev script sets NODE_ENV=development. Testing also requires a loopback frontend
+origin, request hostname and socket peer. In production or without the explicit
+flag the routes return 404 and session overrides are ignored. Keep the flag false
+in deployment. No migration is needed.
+
+To test student visibility, create a course as lecturer/admin, expand Test my
+student enrollment, choose a course and click Enroll my account. This explicitly
+saves the real admin's own student profile if absent and a real courseStudents
+row. Remove my enrollment reverses that membership, subject to the same open-game
+guard. Other student accounts are never enrolled by these development endpoints.
+The banner is not a sandbox: course creation and enrollment changes persist in
+the connected database. Switching roles alone only changes the session.
+
+Validation: 16 tests passed with real database integration fixtures rolled back,
+including preview enrollment visibility/removal, saved role preservation,
+per-session isolation, origin/host/admin checks and production disablement.
+Browser verification covered student restrictions, lecturer course form, reload
+persistence and return to admin. Gameplay is still unimplemented; this mode does
+not provide multiple independent student identities for a live game.
+
+FIGMA LANDING PAGES — 24 November 2026
+Inspected the open browser frames 150:4466 (lecturer exercise library, 1440x900)
+and 150:6673 (student PIN join, 1440x900). User explicitly requested using the
+open file after the Figma connector reached its Starter quota. Browser-rendered
+references were used; no design screenshots are embedded as app assets.
+Home.tsx now renders these role landing pages. Course CRUD and student course
+visibility remain accessible via Courses; admin management stays available.
+Shell now uses the compact prototype header. Account actions live in its menu.
+Role testing is collapsed at the bottom right and does not shift the page.
+GET /api/exercises reads real owned, non-deleted exercise summaries; admins may
+read all. Students and anonymous clients cannot access code previews. Usage and
+last-used dates are calculated from game sessions. There are no seeded mock cards
+or invented version labels (the schema does not have exercise versions).
+Search, draft/topic filters and sort operate on saved exercise data. Import,
+exercise editing/copy/delete/start remain disabled until those workflows exist.
+The PIN form validates six digits and reports that live joining is unfinished;
+it does not pretend to connect a game. This change matches the two landing page
+layouts, not the remaining editor, lobby, gameplay and results implementation.
+Validation: browser visual review of both desktop role pages, role switching,
+PIN validation, course-navigation preservation; all 16 tests including real
+PostgreSQL library queries/soft-deletion/role restrictions; full build/type checks.
+No database migrations or production deployment changes were made.
+
+LOCAL GIT CHECKPOINT — 24 November 2026
+Initialized local Git on checkpoint/codeline-progress to save current work. This
+checkpoint does not contain the original GitHub commit ancestry and has not been
+pushed. Later authenticate GitHub, fetch/clone its real history, and apply the
+reviewed checkpoint changes onto that history. Do not force-push this root commit
+over the remote main branch. Environment files, sessions, keys, dependencies and
+build output are ignored and excluded. Existing Git author settings were used.
+
+GITHUB HISTORY — 24 November 2026
+GitHub CLI authenticated as DenniTrea. Fetched origin/main and verified it still
+points to the original 5b17f1c setup commit. Preserved the independent local
+8dade2f checkpoint on checkpoint/codeline-progress. The progress/codeline-app
+branch applies the application snapshot directly on origin/main, making it
+mergeable without unrelated-history replacement or force-pushing main.

@@ -18,8 +18,19 @@ backend/   API and live game server
 docs/      Project documentation
 ```
 
-The application has not been scaffolded yet. The existing database schema has
-already been applied and is managed through DataGrip.
+The initial frontend and backend are scaffolded. The existing database schema
+has already been applied and is managed through DataGrip. No migrations run on
+startup. See [development instructions](docs/development.txt) for setup, current
+limitations, Microsoft registration and verification.
+
+```bash
+npm ci
+npm run dev
+```
+
+Open http://localhost:5173. The backend uses port 3001 to avoid the existing
+PostgREST service on port 3000. Real Microsoft sign-in requires Entra setup;
+course creation requires an explicitly approved lecturer or admin account.
 
 ## Local configuration
 
