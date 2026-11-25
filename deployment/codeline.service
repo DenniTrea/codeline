@@ -12,7 +12,7 @@ EnvironmentFile=/etc/codeline/backend.env
 Environment=NODE_ENV=production
 Environment=DEV_ROLE_TESTING=false
 Environment=SESSION_DIR=/var/lib/codeline/sessions
-ExecStart=/usr/bin/node /opt/codeline/backend/dist/src/server.js
+ExecStart=/usr/local/bin/node /opt/codeline/backend/dist/src/server.js
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=30

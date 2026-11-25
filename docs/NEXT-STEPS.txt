@@ -1,6 +1,7 @@
 CodeLine handoff — 25 November 2026
 
-Repository: /home/deni/Projects/codeline, branch progress/codeline-app.
+Repository: /home/deni/Projects/codeline. The user requested merging
+progress/codeline-app into main on 25 November; continue from main after the merge.
 Remote origin is DenniTrea/codeline. Check git log and the remote tracking branch for the latest pushed commit.
 The exercise/game milestone and Figma live-screen updates are included in this checkpoint.
 Read AGENTS.md and README.md before changing the app or schema.
@@ -11,9 +12,10 @@ rejoining, results/course totals/CSV and temporary history. Real-user browser fl
 and PostgreSQL/WebSocket tests passed; see development.txt and test output.
 No schema migration was created or run. Do not recreate the database.
 
-User's latest scope decision: PREPARE DEPLOYMENT FILES ONLY. Nothing was deployed.
+User's latest scope decision: AZURE DEPLOYMENT AUTHORIZED. Private staging is installed;
+public HTTPS is verified; Microsoft sign-in is not yet ready.
 Review deployment/DEPLOYMENT.txt; the package-release script creates an archive.
-Public hosting still requires hostname, HTTPS, Entra callback update and a private
+Public hostname, HTTPS and Entra callback are configured. Sign-in requires a private
 replacement for the secret previously exposed in chat. Never repeat that value.
 
 No permanent per-attempt audit or semester/section model was requested. Activity,
@@ -37,3 +39,11 @@ Recent UI/documentation updates: lecturer and student live-game screens, inline
 lobby QR, admin topic creation, lecturer navigation cleanup, activity diagrams,
 and the supplied database ERD linked from README. Pause/time adjustment remains
 unfinished. The Google Docs group report is separate from this repository.
+
+VM staging: Node.js 24 LTS, Nginx and Certbot installed; codeline systemd API is
+healthy on 127.0.0.1:3002. PostgREST occupies 3000 and admin port 3001. Production
+config is private under /etc/codeline; Microsoft client secret is intentionally
+unset until replaced privately. Public hostname:
+codeline-demo-g06.eastasia.cloudapp.azure.com (HTTPS verified; HTTP redirects).
+Azure inbound TCP 80/443 and the public Web callback are saved. Verify real login
+and rehearse after the user provides the replacement privately; demo is not ready.

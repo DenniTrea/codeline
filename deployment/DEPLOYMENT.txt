@@ -1,16 +1,29 @@
 CodeLine VM deployment preparation — 25 November 2026
 
-Prepared only. Nothing in Azure, Nginx or PostgreSQL has been changed.
+Deployment authorized on 25 November. Application files, Nginx/Node.js and the
+private API have been installed on the VM. Public HTTPS is verified at
+https://codeline-demo-g06.eastasia.cloudapp.azure.com. Microsoft sign-in still
+requires a replacement client secret and an end-to-end login rehearsal.
+The existing PostgreSQL schema/data and PostgREST service are preserved.
 Target: existing Ubuntu VM, frontend + Express API + PostgreSQL 16 together.
-Port 3001 is the API; private PostgREST already uses 3000 and must stay separate.
+Port 3002 is the API. Existing PostgREST uses 3000 plus admin port 3001; preserve both.
 There is no database installation, reset, seed or migration step in this release.
+
+CURRENT DEMO CONFIGURATION
+- Public hostname: codeline-demo-g06.eastasia.cloudapp.azure.com
+- Azure rule allow-codeline-web: priority 320, inbound TCP 80/443.
+- HTTP redirects to HTTPS; Let's Encrypt certificate installed by Certbot.
+- Certbot renewal timer is active and a simulated renewal passed.
+- Public Web callback added to the existing Entra app; localhost retained.
+- /health/ready responds successfully over HTTPS. Production role testing is 404.
+- The production Microsoft client secret is intentionally blank until replaced.
 
 PREREQUISITES
 - A public hostname resolving to the VM's public IP.
-- A compatible Node.js installation at /usr/bin/node (project requires >=22.12).
+- A compatible Node.js installation at /usr/local/bin/node (project requires >=22.12).
 - Nginx, Certbot with its Nginx plugin, and existing PostgreSQL running.
 - Azure inbound TCP 80/443 for HTTPS and the existing authorized SSH access.
-- No public inbound rule is needed for 3001 or 3000. The API binds 127.0.0.1.
+- No public inbound rule is needed for 3002, 3001 or 3000. The API binds 127.0.0.1.
 - The existing database and authorized credentials; do not recreate denidb.
 - Replace the Entra client secret previously pasted into chat before public use.
   Create the replacement privately and remove the old credential in Entra.
@@ -40,10 +53,10 @@ FIRST VM INSTALL (review and run manually when deployment is authorized)
    Set the existing DATABASE_URL to the VM's local PostgreSQL address/denidb.
    Use a strong, stable SESSION_SECRET; changing it signs everyone out.
 5. Copy deployment/codeline.service into /etc/systemd/system/codeline.service.
-   The unit expects /usr/bin/node; adjust that path if Node is installed elsewhere.
+   The unit expects /usr/local/bin/node; adjust that path if Node is installed elsewhere.
      sudo systemctl daemon-reload
      sudo systemctl enable --now codeline
-     curl http://127.0.0.1:3001/health/ready
+     curl http://127.0.0.1:3002/health/ready
 6. Replace YOUR_HOSTNAME in a copy of deployment/nginx.conf. Install under
    /etc/nginx/sites-available/codeline and symlink into sites-enabled. Disable a
    conflicting default site only if it is unused by other applications.

@@ -63,10 +63,12 @@ simplified schema. No extra tables were introduced.
 ## Deployment
 
 Deployment files are prepared in [deployment](deployment/DEPLOYMENT.txt), including
-Nginx, systemd, an environment template and a release packager. They have **not been
-applied to Azure**. Public hosting still needs a hostname, HTTPS, the final Entra
-Web callback and a private replacement for the client secret previously shared in
-chat. The existing self-signed PostgreSQL setup uses TLS encryption without server
+Nginx, systemd, an environment template and a release packager. Application files
+and the API are installed on the Azure VM. Public HTTPS is verified at
+[CodeLine demo](https://codeline-demo-g06.eastasia.cloudapp.azure.com), and its Entra
+Web callback is saved. **Microsoft sign-in still needs a replacement private client
+secret and end-to-end verification.** The previous secret was shared in chat.
+The existing self-signed PostgreSQL setup uses TLS encryption without server
 certificate verification; configure a trusted CA before switching to verify-full.
 
 ```bash
@@ -83,6 +85,16 @@ files, private keys, sessions and real student data must not be committed.
 
 [Open the full-size ERD](docs/diagrams/codeline-erd.png). The existing PostgreSQL
 schema uses quoted camelCase identifiers; preserve it when configuring the app.
+
+## System architecture
+
+![CodeLine system architecture](docs/diagrams/codeline-system-architecture.png)
+
+[Open the full-size architecture](docs/diagrams/codeline-system-architecture.png).
+The target demo hosts Nginx, the frontend, the Express/Socket.IO API and PostgreSQL
+on one Azure Ubuntu VM, with Microsoft Entra ID for sign-in. The VM API uses
+loopback port 3002 because existing PostgREST occupies 3000 and 3001. Verify real
+Microsoft sign-in and rehearse the classroom flow before a live demonstration.
 
 ## Development credit
 
