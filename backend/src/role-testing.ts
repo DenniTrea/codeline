@@ -9,8 +9,10 @@ export function roleTestingEnabled(environment: string | undefined, flag: string
     ['localhost', '127.0.0.1', '[::1]'].includes(new URL(origin).hostname);
 }
 export function localRequest(req: Request) {
+  let hostname=req.hostname;
+  try{hostname ||= new URL(`http://${req.headers.host || ''}`).hostname;}catch{return false;}
   return ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress || '') &&
-    ['localhost', '127.0.0.1', '[::1]'].includes(req.hostname);
+    ['localhost', '127.0.0.1', '[::1]'].includes(hostname);
 }
 export function roleTestingRouter(pool: Pool | null, storedUser: (req: Request) => Promise<User | null>, enabled: boolean, origin: string) {
   const router = Router();

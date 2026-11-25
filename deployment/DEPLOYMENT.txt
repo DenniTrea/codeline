@@ -1,0 +1,89 @@
+CodeLine VM deployment preparation — 25 November 2026
+
+Prepared only. Nothing in Azure, Nginx or PostgreSQL has been changed.
+Target: existing Ubuntu VM, frontend + Express API + PostgreSQL 16 together.
+Port 3001 is the API; private PostgREST already uses 3000 and must stay separate.
+There is no database installation, reset, seed or migration step in this release.
+
+PREREQUISITES
+- A public hostname resolving to the VM's public IP.
+- A compatible Node.js installation at /usr/bin/node (project requires >=22.12).
+- Nginx, Certbot with its Nginx plugin, and existing PostgreSQL running.
+- Azure inbound TCP 80/443 for HTTPS and the existing authorized SSH access.
+- No public inbound rule is needed for 3001 or 3000. The API binds 127.0.0.1.
+- The existing database and authorized credentials; do not recreate denidb.
+- Replace the Entra client secret previously pasted into chat before public use.
+  Create the replacement privately and remove the old credential in Entra.
+
+PACKAGE LOCALLY
+  ./deployment/package-release.sh
+The script runs local tests/builds and writes a tar.gz under /tmp/codeline-release.
+For real database integration checks before packaging:
+  TEST_DATABASE=1 npm test
+Database test fixtures roll back; identity sequences can still advance.
+The archive excludes .env, private keys, sessions, dependencies and DB exports.
+
+FIRST VM INSTALL (review and run manually when deployment is authorized)
+1. Transfer the archive using scp/SSH. Keep an existing release for rollback.
+2. Create the system account if it does not already exist:
+     sudo useradd --system --user-group --home-dir /var/lib/codeline --shell /usr/sbin/nologin codeline
+     sudo install -d -o root -g root -m 755 /opt/codeline
+     sudo install -d -o root -g codeline -m 750 /etc/codeline
+3. Extract the reviewed archive into /opt/codeline:
+     sudo tar -xzf /path/to/codeline-release.tar.gz -C /opt/codeline
+     cd /opt/codeline
+     sudo npm ci --omit=dev --ignore-scripts
+   This installs runtime packages from package-lock.json. The release is already
+   built, so no compiler, Docker or install scripts are required on the VM.
+4. Copy deployment/backend.env.example to /etc/codeline/backend.env and fill it
+   privately. Permissions: root:codeline, 640. Do not paste values into chat.
+   Set the existing DATABASE_URL to the VM's local PostgreSQL address/denidb.
+   Use a strong, stable SESSION_SECRET; changing it signs everyone out.
+5. Copy deployment/codeline.service into /etc/systemd/system/codeline.service.
+   The unit expects /usr/bin/node; adjust that path if Node is installed elsewhere.
+     sudo systemctl daemon-reload
+     sudo systemctl enable --now codeline
+     curl http://127.0.0.1:3001/health/ready
+6. Replace YOUR_HOSTNAME in a copy of deployment/nginx.conf. Install under
+   /etc/nginx/sites-available/codeline and symlink into sites-enabled. Disable a
+   conflicting default site only if it is unused by other applications.
+     sudo nginx -t
+     sudo systemctl reload nginx
+7. Obtain HTTPS interactively after DNS is correct:
+     sudo certbot --nginx -d YOUR_HOSTNAME
+   Review its agreement and HTTPS redirection prompts yourself. Verify automatic
+   certificate renewal with the Certbot timer/dry run.
+8. In Entra, add the exact Web redirect URI:
+     https://YOUR_HOSTNAME/auth/callback
+   Keep the localhost callback for development. Registration stays single tenant.
+9. Verify the public HTTPS website, real Microsoft sign-in, course list, editor,
+   student enrollment, PIN join, WebSocket updates, reconnect, timer and results.
+   Verify a normal student cannot access admin/staff APIs or hidden answer code.
+   Verify DEV_ROLE_TESTING is absent and /api/dev/role-testing/role returns 404.
+   Run a rehearsal with the expected class size before presenting.
+
+DATA AND RESTARTS
+Sessions persist privately under /var/lib/codeline/sessions. PostgreSQL stores
+rosters, assignments and scores. Rejoins preserve assignment and score.
+Cosmetic positions/colors/emotes and attempt request-ID deduplication are memory
+only: they reset on API restart. No per-attempt history is stored. The backend
+reconstructs deadlines from timestamps and closes expired games after restart.
+Do not retry a failed attempt automatically after a server restart; refresh the
+current game state first. No code execution/evaluation service is involved.
+
+OPERATIONS
+  sudo systemctl status codeline
+  sudo journalctl -u codeline -n 100 --no-pager
+  sudo systemctl restart codeline
+  sudo nginx -t
+Keep PostgreSQL backups outside the VM and rehearse restoring them. Certificate
+validation for PostgreSQL can move from require to verify-full after installing
+a trusted server certificate/CA; require currently encrypts without validating it.
+Do not expose credentials in service logs or make session directories web-readable.
+
+UPDATING AND ROLLBACK
+Stop the API before replacing its files. Keep the previous /opt/codeline tree or
+archive, apply the new built release, run npm ci --omit=dev --ignore-scripts,
+then restart codeline. Keep /etc/codeline/backend.env and /var/lib/codeline separate.
+Check readiness and HTTPS after every update. Rollback restores the previous app
+files and restarts the service; it never resets/migrates the existing database.

@@ -1,0 +1,39 @@
+CodeLine handoff — 25 November 2026
+
+Repository: /home/deni/Projects/codeline, branch progress/codeline-app.
+Remote origin is DenniTrea/codeline. Check git log and the remote tracking branch for the latest pushed commit.
+The exercise/game milestone and Figma live-screen updates are included in this checkpoint.
+Read AGENTS.md and README.md before changing the app or schema.
+
+Implemented locally: auth/admin/courses, complete exercise editing/copy/archive/
+import, lobby and PIN joining, waiting playground, assignments, scoring, deadlines,
+rejoining, results/course totals/CSV and temporary history. Real-user browser flow
+and PostgreSQL/WebSocket tests passed; see development.txt and test output.
+No schema migration was created or run. Do not recreate the database.
+
+User's latest scope decision: PREPARE DEPLOYMENT FILES ONLY. Nothing was deployed.
+Review deployment/DEPLOYMENT.txt; the package-release script creates an archive.
+Public hosting still requires hostname, HTTPS, Entra callback update and a private
+replacement for the secret previously exposed in chat. Never repeat that value.
+
+No permanent per-attempt audit or semester/section model was requested. Activity,
+request-ID deduplication and playground state are memory only. Unsolved/absent final
+scores are 0; starting score is 100 with the configured wrong-attempt deduction.
+A real 60-player rehearsal/load test is still needed before class presentation.
+Pause/time extension would need a separate state decision; do not invent schema.
+
+The Figma connector previously hit its Starter quota. The user explicitly asked
+for inspecting the open Figma browser instead. Reference frame IDs: library
+150:4466, editor 150:4640, waiting playground 150:5854, student join 150:6673,
+staff results 150:4837. Do not replace these screens with generic starter layouts.
+The user does not want final replies filled with screenshot pictures.
+
+Final verification: 28 tests passed (20 backend including real PostgreSQL, 8
+frontend), type checks/build passed, release archive generated and credential
+exclusion checked. Browser admin session restored; isolated QA records removed.
+Prepared archive is in /tmp/codeline-release; rerun package-release.sh after changes.
+
+Recent UI/documentation updates: lecturer and student live-game screens, inline
+lobby QR, admin topic creation, lecturer navigation cleanup, activity diagrams,
+and the supplied database ERD linked from README. Pause/time adjustment remains
+unfinished. The Google Docs group report is separate from this repository.

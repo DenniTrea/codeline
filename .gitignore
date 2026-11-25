@@ -8,6 +8,8 @@ coverage/
 
 # Local environment and credentials
 .env
+*.env
+!*.env.example
 .env.*
 !.env.example
 !.env.*.example
@@ -35,3 +37,7 @@ Thumbs.db
 
 # Local session files
 .local/
+
+# Packaged releases
+*.tar.gz
+/releases/

@@ -3,6 +3,7 @@ import { api } from './api';
 import { Shell } from './Shell';
 type User = {id:string; email:string; role:string; displayName:string|null; studentNumber:string|null; enrolledCount?:number};
 type Course = {id:number; code:string; studentCount:number; enrolledCount:number};
+type Topic = {id:number; name:string};
 type Summary = {accounts:number; students:number; courses:number; enrollments:number; openSessions:number; database:string};
 const roles = ['student','ta','lecturer','admin'];
 function AccountRow({ user, selfId, changed, fail }: {user:User; selfId:string; changed:()=>Promise<void>; fail:(message:string)=>void}) {
@@ -34,10 +35,12 @@ function AccountRow({ user, selfId, changed, fail }: {user:User; selfId:string; 
   </article>;
 }
 export function AdminPanel({name,selfId,onSignOut,onCourses}:{name:string;selfId:string;onSignOut:()=>void;onCourses:()=>void}) {
-  const [tab,setTab]=useState<'overview'|'accounts'|'courses'>('overview');
+  const [tab,setTab]=useState<'overview'|'accounts'|'courses'|'topics'>('overview');
   const [summary,setSummary]=useState<Summary|null>(null);
   const [users,setUsers]=useState<User[]>([]);
   const [courses,setCourses]=useState<Course[]>([]);
+  const [topics,setTopics]=useState<Topic[]>([]);
+  const [topicName,setTopicName]=useState('');
   const [members,setMembers]=useState<User[]>([]);
   const [candidates,setCandidates]=useState<User[]>([]);
   const [q,setQ]=useState(''); const [role,setRole]=useState(''); const [offset,setOffset]=useState(0); const [more,setMore]=useState(false);
@@ -72,6 +75,7 @@ export function AdminPanel({name,selfId,onSignOut,onCourses}:{name:string;selfId
     const [s,c]=await Promise.all([api<Summary>('/api/admin/summary'),api<{courses:Course[]}>('/api/admin/courses')]);
     setSummary(s);setCourses(c.courses);
   },[]);
+  const loadTopics=useCallback(async()=>{const data=await api<{topics:Topic[]}>('/api/exercises/topics');setTopics(data.topics);},[]);
   const loadUsers=useCallback(async()=>{
     const requestId=++usersRequest.current;
     const data=await api<{users:User[];hasMore:boolean}>(`/api/admin/users?${new URLSearchParams({q,role,offset:String(offset)})}`);
@@ -89,7 +93,9 @@ export function AdminPanel({name,selfId,onSignOut,onCourses}:{name:string;selfId
   useEffect(()=>{let active=true;setLoading(true);loadBase().catch(e=>{if(active)fail(e.message);}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[loadBase]);
   useEffect(()=>{if(tab!=='accounts')return;let active=true;setLoading(true);loadUsers().catch(e=>{if(active)fail(e.message);}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[tab,loadUsers]);
   useEffect(()=>{if(tab!=='courses')return;let active=true;setLoading(true);loadRoster().catch(e=>{if(active)fail(e.message);}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[tab,loadRoster]);
-  async function refresh(){setError('');setLoading(true);try{await loadBase();if(tab==='accounts')await loadUsers();if(tab==='courses')await loadRoster();}catch(e){fail((e as Error).message);}finally{setLoading(false);}}
+  useEffect(()=>{if(tab!=='topics')return;let active=true;setLoading(true);loadTopics().catch(e=>{if(active)fail(e.message);}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[tab,loadTopics]);
+  async function addTopic(e:FormEvent){e.preventDefault();setBusy(true);setError('');setNotice('');try{const r=await api<{topic:Topic}>('/api/exercises/topics',{method:'POST',body:JSON.stringify({name:topicName.trim()})});const existed=topics.some(t=>t.id===r.topic.id);await loadTopics();setTopicName('');setNotice(existed?'Topic already exists.':'Topic added.');}catch(e){fail((e as Error).message);}finally{setBusy(false);}}
+  async function refresh(){setError('');setLoading(true);try{await loadBase();if(tab==='accounts')await loadUsers();if(tab==='courses')await loadRoster();if(tab==='topics')await loadTopics();}catch(e){fail((e as Error).message);}finally{setLoading(false);}}
   async function saveCourse(e:FormEvent){
     e.preventDefault();setBusy(true);setError('');setNotice('');
     try{
@@ -119,8 +125,8 @@ export function AdminPanel({name,selfId,onSignOut,onCourses}:{name:string;selfId
   return <Shell name={name} role="admin" title="Admin panel" onSignOut={onSignOut} onCourses={onCourses}>
     <main className="max-w-7xl mx-auto px-5 py-9">
       <div className="flex justify-between items-center gap-4 mb-3"><h1 className="brand text-lg sm:text-xl text-[#ffd133]">ADMIN PANEL</h1><button className="secondary-button" disabled={loading||busy} onClick={refresh}>Refresh</button></div>
-      <p className="muted mb-7">Manage CodeLine accounts, course details and student access.</p>
-      <nav aria-label="Admin sections" className="flex flex-wrap gap-2 border-b border-[#333654] pb-4 mb-6">{(['overview','accounts','courses'] as const).map(t=><button key={t} aria-current={tab===t?'page':undefined} className={`admin-tab ${tab===t?'active':''}`} onClick={()=>{setTab(t);setError('');setNotice('');}}>{t==='courses'?'Courses & enrollment':t==='accounts'?'Accounts':'Overview'}</button>)}</nav>
+      <p className="muted mb-7">Manage CodeLine accounts, courses, topics and student access.</p>
+      <nav aria-label="Admin sections" className="flex flex-wrap gap-2 border-b border-[#333654] pb-4 mb-6">{(['overview','accounts','courses','topics'] as const).map(t=><button key={t} aria-current={tab===t?'page':undefined} className={`admin-tab ${tab===t?'active':''}`} onClick={()=>{setTab(t);setError('');setNotice('');}}>{t==='courses'?'Courses & enrollment':t==='accounts'?'Accounts':t==='topics'?'Topics':'Overview'}</button>)}</nav>
       {error&&!courseToDelete&&<p role="alert" className="alert-error mb-5">{error}</p>}{notice&&<p role="status" className="alert-success mb-5">{notice}</p>}
       {loading&&<p className="muted mb-4" role="status">Loading…</p>}
       {tab==='overview'&&summary&&<>
@@ -134,6 +140,7 @@ export function AdminPanel({name,selfId,onSignOut,onCourses}:{name:string;selfId
         {!loading&&!users.length&&<p className="muted">No matching accounts.</p>}
         <div className="flex items-center gap-4 mt-5"><button className="secondary-button" disabled={!offset||loading} onClick={()=>setOffset(offset-50)}>Previous accounts</button><span className="muted">Page {offset/50+1}</span><button className="secondary-button" disabled={!more||loading} onClick={()=>setOffset(offset+50)}>Next accounts</button></div>
       </>}
+      {tab==='topics'&&<section className="panel p-6 max-w-3xl"><h2 className="text-lg text-[#ffd133] mb-3">Topics</h2><p className="muted mb-5">Add topics for the exercise editor and library filters.</p><form onSubmit={addTopic} className="flex flex-wrap gap-4 items-end"><label className="field-label flex-1 min-w-0">Topic name<input className="form-input" required maxLength={50} placeholder="e.g. Conditions" value={topicName} disabled={busy} onChange={e=>setTopicName(e.target.value)}/></label><button className="primary-button !w-auto" disabled={busy||loading||!topicName.trim()}>{busy?'Adding…':'Add topic'}</button></form><h3 className="mt-7 mb-3 text-sm text-[#a6abcc]">Existing topics ({topics.length})</h3><ul className="divide-y divide-[#333654]">{topics.map(t=><li key={t.id} className="py-3 break-words">{t.name}</li>)}</ul>{!loading&&!topics.length&&<p className="muted">No topics yet.</p>}</section>}
       {tab==='courses'&&<div className="grid lg:grid-cols-[320px_1fr] gap-6 items-start">
         <aside className="space-y-5">
           <form onSubmit={saveCourse} className="panel p-5 space-y-4"><h2 className="text-[#ffd133]">{editId?'Edit course':'Create course'}</h2><label className="field-label block">Course code<input required maxLength={30} className="form-input" value={code} onChange={e=>setCode(e.target.value)} placeholder="CSC213"/></label><label className="field-label block">Planned students<input required type="number" min={0} max={32767} step={1} className="form-input" value={count} onChange={e=>setCount(e.target.value)}/></label><button className="primary-button" disabled={busy||!code.trim()}>{busy?'Saving…':editId?'Save course':'Create course'}</button>{editId&&<button type="button" className="secondary-button w-full" onClick={()=>{setEditId(null);setCode('');setCount('0');}}>Cancel edit</button>}</form>

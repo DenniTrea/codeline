@@ -200,3 +200,117 @@ points to the original 5b17f1c setup commit. Preserved the independent local
 8dade2f checkpoint on checkpoint/codeline-progress. The progress/codeline-app
 branch applies the application snapshot directly on origin/main, making it
 mergeable without unrelated-history replacement or force-pushing main.
+
+EXERCISE AND LIVE GAME MILESTONE — 25 November 2026
+The existing schema was inspected again; no migrations, new tables or database
+resets were run. The following supersedes earlier notes that these flows were
+unimplemented.
+
+EXERCISES
+New exercise -> Blank / Copy an exercise / Import file -> ordered code editor ->
+Save draft / Save ready. Metadata includes course, topic, problem, pseudocode,
+duration and wrong-attempt penalty. Admin/staff can add topic names explicitly.
+Code import is inert text, preserves indentation, normalizes CRLF and marks empty
+formatting rows GIVEN. Limits: 128 KB import, 500 lines, 2000 characters per line.
+Ready exercises need a problem and at least one nonempty BLANK answer. Course
+planned count is only a guide; lobby creation uses the actual enrolled roster.
+Copying generates independent line IDs and preserves copiedFromId. Once any game
+references an exercise it cannot be edited; copy it instead. Delete archives it,
+preserves games, and offers Undo. Failed initial loads disable mutation controls
+and offer Retry. Unsaved editor navigation is confirmed before discarding work.
+
+GAMES
+Creating a lobby snapshots courseStudents into gameParticipants and reserves a
+unique six-digit PIN. The number of BLANK lines must equal the enrolled roster;
+GIVEN lines are extra. Staff can lock a lobby, correct attendance, or close an
+unstarted lobby. Started games are retained. Students can enter the PIN, rejoin,
+or explicitly leave an unstarted lobby; disconnecting does not reset assignment.
+At start waiting students become absent. BLANK lines are shuffled and assigned
+uniquely. Absence reveals the assigned answer for 0 points. Backend placement
+checks are authoritative: 100 initial points, subtract the exercise penalty for
+wrong placement, floor 0. Correct placement retains remaining points. All joined
+students solving ends the game; manual end or deadline gives unsolved students 0.
+The user explicitly confirmed unsolved=0 on 25 November.
+
+Game state is derived from timestamps. The server closes expired sessions on a
+one-second sweep and on game reads; deadlines survive an API restart. Scores and
+assignments are in PostgreSQL. Student payloads omit assigned line IDs/positions,
+hidden code and staff rosters. Only visible board lines and the student's own
+code are returned. Game queries and mutations are enrollment/host/role checked.
+Line assignments, starts and scoring serialize on the game row. Repeated request
+IDs deduplicate attempts in memory for ten minutes; this is not a durable audit
+or an exactly-once guarantee across API restarts. Mutations are never retried
+automatically after network failure.
+
+Socket.IO shares the authenticated cookie session and rechecks roles/room access
+when subscribing. It broadcasts room-change notifications; clients read their
+own authorized state. Same-origin polling and WebSockets are supported, with a
+5-second HTTP refresh fallback. Foreign origins, anonymous sockets, unauthorized
+rooms and malformed packets are rejected. Cosmetic movement is bounded and
+batched per room; colors and four predefined emotes are temporary, with no free
+text chat. WASD/arrows, clicking the floor and mobile movement buttons work.
+The waiting-room layout follows Figma frame 150:5854 using native pixel shapes.
+
+RESULTS AND RETENTION
+Students see their score, rank, elapsed solve time and revealed code. Staff see
+this-game/course-total leaderboards, CSV export, temporary activity and Play again.
+Results/history reference the original immutable exercise. Course totals use
+finished games, matching the simplified course schema: no invented sections or
+semesters. Detailed activity is limited to the latest 2000 entries per game for
+this server session and can be exported separately. It is not a persisted history
+log. No submissionAttempts, attemptCount, semester or section tables were added.
+CSV protects against formula injection and preserves Unicode/numeric penalties.
+Pause/time extensions and a permanent attempt audit were not added; those would
+need separate state/retention decisions. No submitted code is executed.
+
+VALIDATION
+Backend checks include real PostgreSQL transaction fixtures for exercise CRUD,
+immutability, copiedFromId, roster snapshots, room lock, rejoining, attendance,
+assignment uniqueness, hidden-answer payloads, penalties/floor, duplicate requests,
+end/expiry, history and unauthorized access. Real WebSocket tests cover cookie
+sign-in, room authorization, update payloads, cosmetic movement and malformed
+packets. A mocked 61-identity shared-IP test checks per-account rate limits; it is
+not a real 60-player load test. Frontend tests cover text import, API failure
+handling and CSV escaping. Type checks and production builds are required.
+
+Browser verification used the real signed-in project owner in local role-preview
+mode: new exercise/topic, edit/save, ready state, copy, archive/undo, PIN/QR lobby,
+student join, live updates, movement/colors/emotes, start, correct placement,
+automatic 100-point completion, results/course totals and downloaded CSV.
+Mobile checks at 390x844 found and fixed dialog overflow; normal viewport restored.
+Only isolated VERIFY-GAME-1125 / VERIFY-TOPIC-1125 test records were removed,
+after verifying their ownership and participants. Real account/profile retained.
+The effective session was returned to admin. The app is running locally; no
+public deployment or changes to Azure/PostgreSQL configuration were performed.
+
+DEPLOYMENT PREPARATION
+Per explicit user choice, deployment files only were prepared. deployment/
+contains a hardened systemd unit, Nginx proxy/static config, production env
+example, manual deployment guide and release packager. The unit and shell syntax
+were checked locally. Nginx is not installed here, so nginx -t must still run on
+the VM. The package contains built frontend/backend and templates, excludes real
+.env, sessions, SSH keys, node_modules and migrations. No Docker is introduced.
+A public hostname, HTTPS, final Entra callback and privately rotated client secret
+are still required for public hosting. Rehearse with the actual class before use.
+These milestone changes are local and have not been committed or pushed yet.
+
+FINAL CHECKPOINT VALIDATION — 25 November 2026
+20 backend tests passed with TEST_DATABASE=1, including all three real database
+integrations, and 8 frontend tests passed: 28 total, no failures or skips in that
+full run. Both type checks and the production build passed. The release packager
+also passed its normal checks (its default run intentionally skips DB integrations).
+The systemd unit and packaging shell syntax passed local verification. Repository
+and release credential checks passed. The final release includes the malformed
+Socket.IO acknowledgement/emote guards and current compiled UI. PostgreSQL reports
+ready; the app's real admin overview shows the retained account with no leftover
+verification courses, enrollments or open rooms. Current work is still uncommitted.
+
+ADMIN TOPICS / LECTURER HEADER — 25 November 2026
+Removed the header Courses button only for lecturer views. Admin/student/TA
+navigation and existing course functionality remain available. Added Admin panel
+Topics: topic-name form, saved topic list, refresh and duplicate feedback. It uses
+the existing authorized topic API and existing topics table; no migrations or API
+permission changes were required. Browser checks confirmed lecturer button absence,
+admin topic creation/refresh persistence and duplicate reuse. The isolated unused
+verification topic was removed; the user's existing course was preserved.
+Frontend type check and the full production build passed. Changes remain local.

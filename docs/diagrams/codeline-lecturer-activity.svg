@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1860" viewBox="0 0 1120 1860" role="img" aria-labelledby="title"><title id="title">CodeLine — Lecturer Activity Diagram</title><defs><marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="userSpaceOnUse"><path d="M1 1 L11 7 L1 13" fill="none" stroke="#111" stroke-width="1.6"/></marker></defs><rect width="1120" height="1860" fill="white"/>
+<text x="560" y="30" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="25" font-weight="600" fill="#111"><tspan x="560" dy="0">CodeLine — Lecturer Activity Diagram</tspan></text>
+<path d="M500 100.0 L500 143.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M500 197.0 L500 241.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M500 279.0 L500 323.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="513.5" y="289.0" width="37" height="24" fill="white"/>
+<text x="532" y="301.0" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="532" dy="0">Yes</tspan></text>
+<path d="M500 377.0 L500 413.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M500 467.0 L500 511.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M500 549.0 L500 593.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="513.5" y="559.0" width="37" height="24" fill="white"/>
+<text x="532" y="571.0" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="532" dy="0">Yes</tspan></text>
+<path d="M500 647.0 L500 691.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M500 729.0 L500 773.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="513.5" y="739.0" width="37" height="24" fill="white"/>
+<text x="532" y="751.0" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="532" dy="0">Yes</tspan></text>
+<path d="M500 827.0 L500 863.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M500 917.0 L500 961.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M500 999.0 L500 1043.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="513.5" y="1009.0" width="37" height="24" fill="white"/>
+<text x="532" y="1021.0" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="532" dy="0">Yes</tspan></text>
+<path d="M500 1097.0 L500 1133.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M500 1187.0 L500 1231.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M500 1269.0 L500 1351.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="518.0" y="1298.0" width="28" height="24" fill="white"/>
+<text x="532" y="1310.0" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="532" dy="0">No</tspan></text>
+<path d="M500 1389.0 L500 1493.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="513.5" y="1429.0" width="37" height="24" fill="white"/>
+<text x="532" y="1441.0" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="532" dy="0">Yes</tspan></text>
+<path d="M500 1547.0 L500 1611.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M500 1649.0 L500 1775.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="518.0" y="1700.0" width="28" height="24" fill="white"/>
+<text x="532" y="1712.0" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="532" dy="0">No</tspan></text>
+<path d="M519.0 260 L960 260 L960 170 L707.5 170" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="971.0" y="229" width="28" height="24" fill="white"/>
+<text x="985" y="241" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="985" dy="0">No</tspan></text>
+<path d="M519.0 530 L960 530 L960 440 L707.5 440" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="971.0" y="499" width="28" height="24" fill="white"/>
+<text x="985" y="511" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="985" dy="0">No</tspan></text>
+<path d="M519.0 710 L1055 710 L1055 440 L707.5 440" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="1066.0" y="679" width="28" height="24" fill="white"/>
+<text x="1080" y="691" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="1080" dy="0">No</tspan></text>
+<path d="M519.0 980 L960 980 L960 890 L662.5 890" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="971.0" y="949" width="28" height="24" fill="white"/>
+<text x="985" y="961" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="985" dy="0">No</tspan></text>
+<path d="M481.0 1370 L80 1370 L80 1160 L350.0 1160" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="91.0" y="1339" width="28" height="24" fill="white"/>
+<text x="105" y="1351" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="105" dy="0">No</tspan></text>
+<path d="M519.0 1250 L735.0 1250" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="651.5" y="1216" width="37" height="24" fill="white"/>
+<text x="670" y="1228" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="670" dy="0">Yes</tspan></text>
+<path d="M855 1277.0 L855 1470 L500 1470 L500 1493.0" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M519.0 1630 L720.0 1630" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="651.5" y="1596" width="37" height="24" fill="white"/>
+<text x="670" y="1608" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="670" dy="0">Yes</tspan></text>
+<path d="M855 1657.0 L855 1790 L515.0 1790" fill="none" stroke="#111" stroke-width="1.6" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<g id="start"><circle cx="500" cy="85" r="15" fill="#000"/></g>
+<g id="login"><rect x="292.5" y="143.0" width="415" height="54" rx="27.0" fill="#79cce9" stroke="#111" stroke-width="1.8"/><text x="500" y="170" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#111"><tspan x="500" dy="0">Log in (university Microsoft account)</tspan></text></g>
+<g id="choose"><rect x="317.5" y="323.0" width="365" height="54" rx="27.0" fill="#79cce9" stroke="#111" stroke-width="1.8"/><text x="500" y="350" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#111"><tspan x="500" dy="0">Create, copy or edit an exercise</tspan></text></g>
+<g id="edit"><rect x="292.5" y="413.0" width="415" height="54" rx="27.0" fill="#79cce9" stroke="#111" stroke-width="1.8"/><text x="500" y="440" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#111"><tspan x="500" dy="0">Enter exercise details and code lines</tspan></text></g>
+<g id="lobby"><rect x="307.5" y="593.0" width="385" height="54" rx="27.0" fill="#79cce9" stroke="#111" stroke-width="1.8"/><text x="500" y="620" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#111"><tspan x="500" dy="0">Create lobby from a ready exercise</tspan></text></g>
+<g id="share"><rect x="342.5" y="773.0" width="315" height="54" rx="27.0" fill="#79cce9" stroke="#111" stroke-width="1.8"/><text x="500" y="800" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#111"><tspan x="500" dy="0">Share session PIN / QR code</tspan></text></g>
+<g id="monitorLobby"><rect x="337.5" y="863.0" width="325" height="54" rx="27.0" fill="#79cce9" stroke="#111" stroke-width="1.8"/><text x="500" y="890" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#111"><tspan x="500" dy="0">Monitor lobby and attendance</tspan></text></g>
+<g id="startGame"><rect x="350.0" y="1043.0" width="300" height="54" rx="27.0" fill="#79cce9" stroke="#111" stroke-width="1.8"/><text x="500" y="1070" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#111"><tspan x="500" dy="0">Start game</tspan></text></g>
+<g id="monitorGame"><rect x="350.0" y="1133.0" width="300" height="54" rx="27.0" fill="#79cce9" stroke="#111" stroke-width="1.8"/><text x="500" y="1160" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#111"><tspan x="500" dy="0">Monitor live progress</tspan></text></g>
+<g id="results"><rect x="312.5" y="1493.0" width="375" height="54" rx="27.0" fill="#92c96d" stroke="#111" stroke-width="1.8"/><text x="500" y="1520" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#111"><tspan x="500" dy="0">View final scores and leaderboard</tspan></text></g>
+<g id="loginOk"><path d="M500 241 L519 260 L500 279 L481 260 Z" fill="#79cce9" stroke="#111" stroke-width="1.6"/><text x="468" y="252" text-anchor="end" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="468" dy="0">Login successful?</tspan></text></g>
+<g id="saved"><path d="M500 511 L519 530 L500 549 L481 530 Z" fill="#79cce9" stroke="#111" stroke-width="1.6"/><text x="468" y="522" text-anchor="end" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="468" dy="0">Exercise saved successfully?</tspan></text></g>
+<g id="created"><path d="M500 691 L519 710 L500 729 L481 710 Z" fill="#79cce9" stroke="#111" stroke-width="1.6"/><text x="468" y="702" text-anchor="end" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="468" dy="0">Lobby created?</tspan></text></g>
+<g id="startNow"><path d="M500 961 L519 980 L500 999 L481 980 Z" fill="#79cce9" stroke="#111" stroke-width="1.6"/><text x="468" y="972" text-anchor="end" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="468" dy="0">Ready to start?</tspan></text></g>
+<g id="early"><path d="M500 1231 L519 1250 L500 1269 L481 1250 Z" fill="#79cce9" stroke="#111" stroke-width="1.6"/><text x="468" y="1242" text-anchor="end" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="468" dy="0">End game early?</tspan></text></g>
+<g id="ended"><path d="M500 1351 L519 1370 L500 1389 L481 1370 Z" fill="#79cce9" stroke="#111" stroke-width="1.6"/><text x="468" y="1362" text-anchor="end" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="468" dy="0">Session ended?</tspan></text></g>
+<g id="export"><path d="M500 1611 L519 1630 L500 1649 L481 1630 Z" fill="#79cce9" stroke="#111" stroke-width="1.6"/><text x="468" y="1622" text-anchor="end" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="16" font-weight="600" fill="#111"><tspan x="468" dy="0">Export results?</tspan></text></g>
+<g id="endGame"><rect x="735.0" y="1223.0" width="240" height="54" rx="27.0" fill="#79cce9" stroke="#111" stroke-width="1.8"/><text x="855" y="1250" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#111"><tspan x="855" dy="0">End game</tspan></text></g>
+<g id="csv"><rect x="720.0" y="1603.0" width="270" height="54" rx="27.0" fill="#79cce9" stroke="#111" stroke-width="1.8"/><text x="855" y="1630" text-anchor="middle" dominant-baseline="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="600" fill="#111"><tspan x="855" dy="0">Download results CSV</tspan></text></g>
+<g id="finish"><circle cx="500" cy="1790" r="16" fill="white" stroke="#111" stroke-width="1.7"/><circle cx="500" cy="1790" r="11" fill="#000"/></g>
+</svg>

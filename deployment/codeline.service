@@ -1,0 +1,29 @@
+[Unit]
+Description=CodeLine classroom game API
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=codeline
+Group=codeline
+WorkingDirectory=/opt/codeline/backend
+EnvironmentFile=/etc/codeline/backend.env
+Environment=NODE_ENV=production
+Environment=DEV_ROLE_TESTING=false
+Environment=SESSION_DIR=/var/lib/codeline/sessions
+ExecStart=/usr/bin/node /opt/codeline/backend/dist/src/server.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+StateDirectory=codeline
+StateDirectoryMode=0700
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/codeline
+
+[Install]
+WantedBy=multi-user.target

@@ -19,6 +19,7 @@ export function App() {
     const data=await r.json();setIdentity(data.identity);setRole(data.user.role);setRoleTesting(data.roleTesting===true);setShowAdmin(data.user.role==='admin');setShowCourses(false);setViewVersion(v=>v+1);
   }
   useEffect(() => {
+    const pin=new URLSearchParams(location.search).get('pin');if(pin&&/^\d{6}$/.test(pin))sessionStorage.setItem('codeline:pin',pin);
     if (new URLSearchParams(location.search).has('authError')) setError('Microsoft sign-in failed. Please try again.');
     const controller = new AbortController();
     fetch('/api/me', { signal: controller.signal }).then(async r => {
@@ -27,6 +28,7 @@ export function App() {
     }).catch(e => { if (e.name !== 'AbortError') setError('Could not reach CodeLine. Please try again.'); });
     return () => controller.abort();
   }, []);
+  function home(){const url=new URL(location.href);url.searchParams.delete('game');url.searchParams.delete('pin');window.history.pushState({},'',url);setShowCourses(false);setShowAdmin(false);}
   async function signIn() {
     setBusy(true); setError('');
     try {
@@ -49,7 +51,7 @@ export function App() {
     {roleTesting&&<RoleTesting role={role} changed={reloadIdentity}/>}
     {error && <p role="alert" className="alert-error">{error}</p>}
     {role==='admin' && showAdmin ? <AdminPanel key={viewVersion} name={identity.name || identity.email || 'SIT user'} selfId={identity.oid} onSignOut={signOut} onCourses={()=>{setShowAdmin(false);setShowCourses(true);}}/> : showCourses?
-    <Courses key={viewVersion} name={identity.name || identity.email || 'SIT user'} role={role} onSignOut={signOut} onAdmin={()=>setShowAdmin(true)} onHome={()=>setShowCourses(false)}/>:
+    <Courses key={viewVersion} name={identity.name || identity.email || 'SIT user'} role={role} onSignOut={signOut} onAdmin={()=>setShowAdmin(true)} onHome={home}/>:
     <Home key={viewVersion} name={identity.name || identity.email || 'SIT user'} role={role} onSignOut={signOut} onAdmin={()=>setShowAdmin(true)} onCourses={()=>setShowCourses(true)}/>}
   </>;
   return <main className="min-h-dvh grid place-items-center p-5">

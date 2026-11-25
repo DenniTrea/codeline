@@ -7,6 +7,9 @@ import { ConfidentialClientApplication, CryptoProvider } from '@azure/msal-node'
 import { config, authConfigured } from './config.js';
 import { createPool } from './db.js';
 import { adminRouter } from './admin.js';
+import { exercisesRouter } from './exercises.js';
+import { gamesRouter } from './games.js';
+import { EventEmitter } from 'node:events';
 import FileStoreFactory from 'session-file-store';
 import { mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -25,6 +28,7 @@ declare module 'express-session' {
 
 export function createApp(options: { pool?: Pool | null; store?: session.Store } = {}) {
   const app = express();
+  const gameEvents=new EventEmitter();
   const testingEnabled = roleTestingEnabled(process.env.NODE_ENV, process.env.DEV_ROLE_TESTING, config.origin);
   const pool = options.pool !== undefined ? options.pool : createPool();
   pool?.on('error', () => console.error('Database pool error'));
@@ -55,7 +59,7 @@ export function createApp(options: { pool?: Pool | null; store?: session.Store }
   } }) : null;
   app.disable('x-powered-by');
   app.use(helmet());
-  app.use(express.json({ limit: '16kb' }));
+  app.use(express.json({ limit: '256kb' }));
   app.use(sessionMiddleware);
   app.use('/api', (_req, res, next) => { res.setHeader('Cache-Control', 'no-store'); next(); });
   app.get('/api/config', (_req, res) => res.json({ microsoftConfigured: authConfigured }));
@@ -74,7 +78,7 @@ export function createApp(options: { pool?: Pool | null; store?: session.Store }
       return res.json({ identity: req.session.identity, user, courseAccessReady: true, roleTesting });
     } catch { return res.status(503).json({ error: 'Database unavailable' }); }
   });
-  app.get('/auth/start', rateLimit({ windowMs: 60_000, limit: 15 }), async (req, res, next) => {
+  app.get('/auth/start', rateLimit({ windowMs: 60_000, limit: 300 }), rateLimit({windowMs:60000,limit:15,keyGenerator:req=>req.sessionID}), async (req, res, next) => {
     if (!msal) return res.status(503).json({ error: 'Microsoft app registration is not configured' });
     try {
       const pkce = await new CryptoProvider().generatePkceCodes();
@@ -171,11 +175,15 @@ export function createApp(options: { pool?: Pool | null; store?: session.Store }
       res.json({exercises:r.rows});
     }catch{return res.status(503).json({error:'Could not load exercises. Please try again.'});}
   });
+  app.use('/api/exercises', exercisesRouter(pool,currentUser));
+  app.use('/api/games', gamesRouter(pool,currentUser,id=>gameEvents.emit('changed',id)));
   app.use('/api/dev/role-testing', roleTestingRouter(pool, storedUser, testingEnabled, config.origin));
   app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
   app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    if((error as {type?:string}).type==='entity.too.large')return res.status(413).json({error:'Exercise data is too large. Use a smaller code file.'});
+    if((error as {type?:string}).type==='entity.parse.failed')return res.status(400).json({error:'Invalid JSON body'});
     console.error('Request failed', error instanceof Error ? error.name : 'UnknownError');
     res.status(500).json({ error: 'Request failed' });
   });
-  return { app, pool, sessionMiddleware };
+  return { app, pool, sessionMiddleware, currentUser, gameEvents };
 }

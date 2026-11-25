@@ -1,54 +1,91 @@
 # CodeLine
 
-Classroom coding exercises and live games.
+Classroom code-line exercises and live games, using university Microsoft sign-in.
 
-## Planned stack
+## Run locally
 
-- Frontend: React, TypeScript, Vite, Tailwind CSS
-- Backend: Node.js, Express, TypeScript, Socket.IO
-- Database: PostgreSQL
-- Authentication: Microsoft Entra ID with MSAL
-- Hosting: Azure Ubuntu VM with Nginx
-
-## Repository structure
-
-```text
-frontend/  Web application
-backend/   API and live game server
-docs/      Project documentation
-```
-
-The initial frontend and backend are scaffolded. The existing database schema
-has already been applied and is managed through DataGrip. No migrations run on
-startup. See [development instructions](docs/development.txt) for setup, current
-limitations, Microsoft registration and verification.
+Requires Node.js >=22.12 and npm. The existing PostgreSQL schema is already
+migrated; the application never installs or migrates it on startup.
 
 ```bash
 npm ci
+# Fill backend/.env using backend/.env.example; keep real credentials private.
 npm run dev
 ```
 
-Open http://localhost:5173. The backend uses port 3001 to avoid the existing
-PostgREST service on port 3000. Real Microsoft sign-in requires Entra setup;
-course creation requires an explicitly approved lecturer or admin account.
+Open [CodeLine](http://localhost:5173/). Vite proxies the API and Socket.IO to
+Express on `127.0.0.1:3001`. Private PostgREST uses port 3000 separately.
 
-## Local configuration
+## Implemented
 
-Copy `backend/.env.example` to `backend/.env` and fill in local settings when
-building the backend. Environment loading will be configured with the backend.
-Keep database passwords and Azure private keys out of commits. Frontend build
-variables are public: database credentials belong only in the backend.
+- Microsoft Entra/MSAL sign-in and database-backed admin, lecturer, TA, student roles.
+- Admin accounts, student profiles, course CRUD and student enrollment.
+- Figma-style exercise library, new-exercise dialog, line editor, text/code import,
+  copies, drafts/ready validation, archive and undo. Played exercises stay immutable.
+- Lobby PIN/QR, roster snapshot, room lock and attendance correction.
+- Authorized Socket.IO updates, a waiting-room playground with movement/colors/emotes,
+  unique student line assignments, attempts and deadline enforcement.
+- Server-side scores from 100 down to 0; unsolved/absent final scores are 0.
+- Rejoining, results, game history, course totals, CSV and temporary activity logs.
+- Local-only admin role testing, with an explicit real-account enrollment control.
 
-## Git workflow
+No submitted code is executed. Students place their assigned code at a position.
+Game answers are hidden until given, solved, revealed for absence or game end.
+The game needs exactly one BLANK line for each enrolled student; GIVEN lines are extra.
+The manually planned course count is a guide; the actual enrolled roster determines
+lobby assignments. New users must sign in once before an admin can enroll them.
 
-The default branch is `main`. Create one branch per feature:
+## Verify
 
 ```bash
-git switch -c feat/course-management
-git add <specific-files>
-git diff --cached
-git commit -m "feat: add course management"
+npm run typecheck -w backend
+npm run typecheck -w frontend
+npm test                       # DB integrations are skipped unless enabled
+TEST_DATABASE=1 npm test        # includes real PostgreSQL integration fixtures
+npm run build
 ```
 
-Connect an existing GitHub repository as `origin` before pushing. Avoid committing
-real `.env` files, database exports, private keys, or student data.
+Integration fixtures roll back. PostgreSQL identity sequences can still advance.
+The shared-IP test checks request limiting for 61 simulated identities, not a
+60-player performance/load guarantee. Rehearse with the actual class before use.
+
+## Data retention
+
+PostgreSQL persists courses, exercises, session rosters, assignments and scores.
+Waiting-room positions/emotes and detailed activity are memory-only; export activity
+before restarting if you need a copy. Wrong-attempt request IDs are deduplicated in
+memory for ten minutes and are not a durable per-attempt audit log.
+
+The design's semester/section tabs and permanent detailed history are represented
+by course totals and an explicitly temporary activity log, matching the agreed
+simplified schema. No extra tables were introduced.
+
+## Deployment
+
+Deployment files are prepared in [deployment](deployment/DEPLOYMENT.txt), including
+Nginx, systemd, an environment template and a release packager. They have **not been
+applied to Azure**. Public hosting still needs a hostname, HTTPS, the final Entra
+Web callback and a private replacement for the client secret previously shared in
+chat. The existing self-signed PostgreSQL setup uses TLS encryption without server
+certificate verification; configure a trusted CA before switching to verify-full.
+
+```bash
+./deployment/package-release.sh
+```
+
+See [development notes](docs/development.txt) for project history. The stack is React,
+TypeScript, Vite, Tailwind, Node/Express, Socket.IO and PostgreSQL 16. Environment
+files, private keys, sessions and real student data must not be committed.
+
+## Database ERD
+
+![CodeLine database ERD](docs/diagrams/codeline-erd.png)
+
+[Open the full-size ERD](docs/diagrams/codeline-erd.png). The existing PostgreSQL
+schema uses quoted camelCase identifiers; preserve it when configuring the app.
+
+## Development credit
+
+The application implementation was coded by **OpenAI Codex**, under the CodeLine
+team's direction. The team supplied the project requirements, stakeholder notes,
+Figma designs and system models.
